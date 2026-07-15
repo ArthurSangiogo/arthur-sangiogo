@@ -1,0 +1,25 @@
+{
+  "name": "arthur-sangiogo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArthurSangiogo/arthur-sangiogo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/ArthurSangiogo/arthur-sangiogo/issues"
+  },
+  "homepage": "https://github.com/ArthurSangiogo/arthur-sangiogo#readme",
+  "dependencies": {
+    "pg": "^8.22.0",
+    "prompt-sync": "^4.2.0"
+  }
+}
