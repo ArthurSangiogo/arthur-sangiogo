@@ -66,7 +66,6 @@ async function criarUsuario() {
   }
 }
 
-
 async function cadastrarProduto() {
   try {
     console.log('\n  CADASTRAR NOVO PRODUTO\n');
@@ -110,21 +109,14 @@ async function listarProdutos() {
 
 async function alterarProduto() {
   try {
-    const email = prompt('Email do usuário: ').trim();
-    const usuario = await buscarUsuarioPorEmail(email);
-
-    if (!usuario) {
-      console.log('❌ Usuário não encontrado.');
-      return;
-    }
-
+    const adm = isAdminAnswer(prompt('Você é administrador? (s/n): '));
     const id = prompt('ID do produto a alterar: ').trim();
     if (!id) {
       console.log('❌ ID inválido.');
       return;
     }
 
-    if (usuario.adm) {
+    if (adm) {
       console.log('✅ Admin: pode alterar nome, preço e quantidade.');
       const nome = prompt('Novo nome: ').trim();
       const preco = prompt('Novo preço: ').trim();
@@ -151,15 +143,9 @@ async function alterarProduto() {
 
 async function excluirProduto() {
   try {
-    const email = prompt('Email do usuário: ').trim();
-    const usuario = await buscarUsuarioPorEmail(email);
+    const adm = isAdminAnswer(prompt('Você é administrador? (s/n): '));
 
-    if (!usuario) {
-      console.log('❌ Usuário não encontrado.');
-      return;
-    }
-
-    if (!usuario.adm) {
+    if (!adm) {
       console.log('⛔ Apenas admin pode excluir produtos.');
       return;
     }
