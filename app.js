@@ -66,13 +66,6 @@ async function criarUsuario() {
   }
 }
 
-async function buscarUsuarioPorEmail(email) {
-  const resultado = await client.query(
-    'SELECT id, nome, email, adm FROM "Usuario" WHERE email = $1;',
-    [email.trim()]
-  );
-  return resultado.rows[0];
-}
 
 async function cadastrarProduto() {
   try {
@@ -137,3 +130,99 @@ async function alterarProduto() {
       const preco = prompt('Novo preço: ').trim();
       const quantidade = prompt('Nova quantidade: ').trim();
 
+      await client.query(
+        'UPDATE produto SET nome = $1, preco = $2, quantidade = $3 WHERE id = $4;', 
+        [nome, preco, quantidade, id]
+      );
+      console.log('✅ Produto alterado com sucesso.');
+    } else {
+      console.log('⚠️ Operário: só pode alterar a quantidade.');
+      const quantidade = prompt('Nova quantidade: ').trim();
+      await client.query(
+        'UPDATE produto SET quantidade = $1 WHERE id = $2;', 
+        [quantidade, id]
+      );
+      console.log('✅ Quantidade atualizada com sucesso.');
+    }
+  } catch (erro) {
+    console.log('❌ Erro ao alterar produto:', erro.message);
+  }
+}
+
+async function excluirProduto() {
+  try {
+    const email = prompt('Email do usuário: ').trim();
+    const usuario = await buscarUsuarioPorEmail(email);
+
+    if (!usuario) {
+      console.log('❌ Usuário não encontrado.');
+      return;
+    }
+
+    if (!usuario.adm) {
+      console.log('⛔ Apenas admin pode excluir produtos.');
+      return;
+    }
+
+    const id = prompt('ID do produto a excluir: ').trim();
+    if (!id) {
+      console.log('❌ ID inválido.');
+      return;
+    }
+
+    await client.query('DELETE FROM produto WHERE id = $1;', [id]);
+    console.log('✅ Produto excluído com sucesso.');
+  } catch (erro) {
+    console.log('❌ Erro ao excluir produto:', erro.message);
+  }
+}
+
+async function menu() {
+  while (true) {
+    console.log('\n=== MENU DO ALMOXARIFADO ===');
+    console.log('1 - Cadastrar usuário');
+    console.log('2 - Cadastrar produto');
+    console.log('3 - Listar produtos');
+    console.log('4 - Alterar produto');
+    console.log('5 - Excluir produto (somente admin)');
+    console.log('6 - Sair');
+
+    const opcao = prompt('Escolha uma opção: ').trim();
+
+    switch (opcao) {
+      case '1':
+        await criarUsuario();
+        break;
+      case '2':
+        await cadastrarProduto();
+        break;
+      case '3':
+        await listarProdutos();
+        break;
+      case '4':
+        await alterarProduto();
+        break;
+      case '5':
+        await excluirProduto();
+        break;
+      case '6':
+        console.log('Saindo...');
+        await client.end();
+        process.exit(0);
+      default:
+        console.log('Opção inválida. Tente novamente.');
+    }
+  }
+}
+
+async function main() {
+  try {
+    await client.connect();
+    await initTables();
+    await menu();
+  } catch (erro) {
+    console.log('❌ Erro na aplicação:', erro.message);
+  }
+}
+
+main();
